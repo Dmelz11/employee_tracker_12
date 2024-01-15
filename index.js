@@ -11,10 +11,10 @@ inquirer.prompt([
    name: "options",
    type: "list",
    message:"Please choose an option",
+
    choices:[
     "View All Employees",
     "View Employees By Department",
-    "Update Employee Manager",
     "Update Employee Role",
     "Update Employee Salary",
     "Add Employee",
@@ -29,12 +29,62 @@ inquirer.prompt([
     "Remove Department",
     "Exit"
    ]
-]
-}
-
-
+  }
+])
 //use conditional statement (if or switch)
 //choice is view all departments: execute viewAllDepartment function
+.then((answers)=>{
+    const{choices}= answers;
+
+    if(choices==="View All Employees"){
+        viewAllEmployees();
+    if(choices ==="View Employees By Department"){
+        viewEmployeesByDepartment();
+    }
+    if(choices ==="Update Employee Role"){
+        updateEmployeeRole();
+    }
+    if(choices ==="Update Employee Salary"){
+        updateEmployeeSalary();
+    }
+    if(choices ==="Add Employee"){
+        addEmployee();
+    }
+    if(choices ==="Remove Employee"){
+        removeEmployee();
+    }
+    if(choices ==="View All Roles"){
+        viewAllRoles();
+    }
+    if(choices ==="Add Role"){
+        addRole();
+    }
+    if(choices ==="Remove Role"){
+        removeRole();
+    }
+    if(choices ==="View All Departments"){
+        viewAllDepartments();
+    }
+    if(choices ==="View All Department Budgets"){
+        viewAllDepartmentBudgets();
+    }
+    if(choices ==="View All Department Employees"){
+        viewAllDepartmentEmployees();
+    }
+    if(choices ==="Add Department"){
+        addDepartment();
+    }
+    if(choices ==="Remove Department"){
+        removeDepartment();
+    }
+    if(choices ==="Exit"){
+        connection.end();
+    }
+  });
+
+
+
+
 
 //function viewAllDepartment() {
     //db.query
