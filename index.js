@@ -24,9 +24,11 @@ const promptUser = () => {
           "Add Department",
           "Remove Department",
           "Exit",
-        ],
-      },
+        ]
+      
+      }
     ])
+  
     //use conditional statement (if or switch)
     //choice is view all departments: execute viewAllDepartment function
     .then((answers) => {
@@ -57,7 +59,7 @@ const promptUser = () => {
         console.log("No selection was matched");
       }
     });
-
+  };
   //function viewAllDepartment() {
   const viewAllDepartments = () => {
     let sql = `SELECT * FROM department`;
@@ -92,29 +94,80 @@ const viewAllEmployees = () => {
   let sql = "SELECT * FROM employee";
   db.query(sql, (err, data) => {
     if (err) throw err;
-    console.table(data);
+    console.log(`Current Employees`);
     promptUser()
   });
-};
+ }; 
 
 const addEmployee = () => {
   //function addEmployee
-  let sql = "SELECT * FROM employee";
-  db.query(sql, (err, data) => {
-    if (err) throw err;
-    console.table(data);
-    promptUser()
-  });
-};
+  inquirer.prompt([
+    {
+      type:'input',
+      name:'firstName',
+      message:"What is the employee's first name?",
+      validate: addFirstName =>{
+        if (addFirstName){
+          return true;
+        } else {
+          console.log('Enter a first name.');
+          return false;
+        }
+      }
+    },
+    {
+      type:'input',
+      name:'lastName',
+      message: "What is employee's last name?",
+      validate: addLastName =>{
+        if (addLastName){
+          return true;
+        } else {
+          console.log('Enter a last name.');
+          return false;
+        }
+      }
+    }
+  ])
+.then(answer =>{
+  const critical = [answer.firstName, answer.lastName]
+  const roleSql = `SELECT * FROM role`;
+  connection.promise().query(roleSql,(error, data)=>{
+     if (error) throw error;
+     const roles = data.map (({id,title})=>({name: title,value:id}));
 
+     inquirer.prompt([
+      {
+      type: 'list',
+      name: 'role',
+      message: "What is the new employee's role?",
+      choices: roles
+      }
+     ])
+    .then(roleChoice =>{
+      const role = roleChoice.role;
+      critical.push(role);
+      const managerSql = `SELECT * FROM employee`;
+      connection.promise().query(managerSql,(error, data)=>{
+        if (error) throw error;
+        const managers = data.map(({id, first_name, last_name})=>({name: first_name +""+ last_name, value: id}));
+        console.log("A new employee has been added.");
+        viewAllEmployees();
+      });
+      });
+    });
+  });
+}
 const removeEmployee = () => {
   //function removeEmployee
-  let sql = "SELECT * FROM employee";
-  db.query(sql, (err, data) => {
-    if (err) throw err;
-    console.table(data);
-    promptUser()
-  });
+  let sql = "SELECT * FROM employee"
+  inquirer.prompt([
+    {
+      type:'input',
+      name: 'firstName',
+
+    }
+  ])
 };
 
 const viewAllRoles = () => {
