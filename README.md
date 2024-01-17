@@ -7,15 +7,15 @@ This system is referred to as a "content management system" or
 
 ## Table of Contents
 
-- [title] (#title)
-- [description] (#description)
-- [installation] (#installation)
-- [usage] (#usage)
-- [credits] (#credits)
-- [license] (#license)
-- [questions] (#questions)
-- [how to contribute] (# how-to-contribute)
-- [links] (#links)
+- [title](#title)
+- [description](#description)
+- [installation](#installation)
+- [usage](#usage)
+- [credits](#credits)
+- [license](#license)
+- [questions](#questions)
+- [how to contribute](#how-to-contribute)
+- [links](#links)
 
 ## Installation
 To install this generator a user could clone the repo to their vscode terminal then open an integrated terminal in the index.js file. Then type npm i, and hit enter. Then type node server.js, and hit enter.
