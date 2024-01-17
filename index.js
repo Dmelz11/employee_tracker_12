@@ -1,90 +1,150 @@
-
 const inquirer = require("inquirer");
+const cTable = require("console.table");
 //import connection
-const db = require('./config/connection')
+const db = require("./config/connection");
 //prompt user which action they want to take
-const promptUser=()=>{
-//array of choices: view all departments, view all roles, view all employees, 
-//add a department, add a role, add an employee, and update an employee role
-inquirer.prompt([
-}
-   name: "options",
-   type: "list",
-   message:"Please choose an option",
-
-   choices:[
-    "View All Employees",
-    "View Employees By Department",
-    "Update Employee Role",
-    "Update Employee Salary",
-    "Add Employee",
-    "Remove Employee",
-    "View All Roles",
-    "Add Role",
-    "Remove Role",
-    "View All Departments",
-    "View Department Budgets",
-    "View Department Employees",
-    "Add Department",
-    "Remove Department",
-    "Exit"
-   ]
-  }
-])
-//use conditional statement (if or switch)
-//choice is view all departments: execute viewAllDepartment function
-.then((answers)=>{
-    const{choices}= answers;
-
-    if(choices==="View All Employees"){
+const promptUser = () => {
+  //array of choices: view all departments, view all roles, view all employees,
+  //add a department, add a role, add an employee, and update an employee role
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "choices",
+        message: "Please choose an option",
+//view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
+        choices: [
+          "View All Employees",
+          "Add Employee",
+          "Remove Employee",
+          "View All Roles",
+          "Add Role",
+          "Remove Role",
+          "View All Departments",
+          "Add Department",
+          "Remove Department",
+          "Exit",
+        ],
+      },
+    ])
+    //use conditional statement (if or switch)
+    //choice is view all departments: execute viewAllDepartment function
+    .then((answers) => {
+      //console.log(answers.choices);
+      const { choices } = answers;
+      console.log(choices);
+      if (choices === "View All Employees") {
         viewAllEmployees();
-    if(choices ==="View Employees By Department"){
-        viewEmployeesByDepartment();
-    }
-    if(choices ==="Update Employee Role"){
-        updateEmployeeRole();
-    }
-    if(choices ==="Update Employee Salary"){
-        updateEmployeeSalary();
-    }
-    if(choices ==="Add Employee"){
+      } else if (choices === "Add Employee") {
         addEmployee();
-    }
-    if(choices ==="Remove Employee"){
+      } else if (choices === "Remove Employee") {
         removeEmployee();
-    }
-    if(choices ==="View All Roles"){
+      } else if (choices === "View All Roles") {
         viewAllRoles();
-    }
-    if(choices ==="Add Role"){
+      } else if (choices === "Add Role") {
         addRole();
-    }
-    if(choices ==="Remove Role"){
+      } else if (choices === "Remove Role") {
         removeRole();
-    }
-    if(choices ==="View All Departments"){
+      } else if (choices === "View All Departments") {
         viewAllDepartments();
-    }
-    if(choices ==="View All Department Budgets"){
-        viewAllDepartmentBudgets();
-    }
-    if(choices ==="View All Department Employees"){
-        viewAllDepartmentEmployees();
-    }
-    if(choices ==="Add Department"){
+      } else if (choices === "Add Department") {
         addDepartment();
-    }
-    if(choices ==="Remove Department"){
+      } else if (choices === "Remove Department") {
         removeDepartment();
-    }
-    if(choices ==="Exit"){
-        connection.end();
-    }
+      } else if (choices === "Exit") {
+        db.end();
+      } else {
+        console.log("No selection was matched");
+      }
+    });
+
+  //function viewAllDepartment() {
+  const viewAllDepartments = () => {
+    let sql = `SELECT * FROM department`;
+    db.query(sql, (err, data) => {
+        if (err) throw err;
+        console.table(data);
+        promptUser()
+      });
+  };
+
+//function to add department
+const addDepartment = () => {
+  let sql = `SELECT * FROM department`;
+  db.query(sql, (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      promptUser()
+    });
+};
+const removeDepartment = () => {
+  //function to remove department
+  let sql = `SELECT * FROM department`;
+  db.query(sql, (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      promptUser()
+    });
+};
+
+const viewAllEmployees = () => {
+  //console.log("view all employees is called");
+  let sql = "SELECT * FROM employee";
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    promptUser()
   });
+};
 
+const addEmployee = () => {
+  //function addEmployee
+  let sql = "SELECT * FROM employee";
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    promptUser()
+  });
+};
 
+const removeEmployee = () => {
+  //function removeEmployee
+  let sql = "SELECT * FROM employee";
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    promptUser()
+  });
+};
 
+const viewAllRoles = () => {
+  //function viewAllRoles
+  let sql = "SELECT * FROM role";
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    promptUser()
+  });
+};
 
+const addRole = () => {
+  //function to add a Role
+  let sql = "SELECT * FROM role";
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    promptUser()
+  });
+};
 
-//function viewAllDepartment() {
-    //db.query
+const removeRole = () => {
+  //function to remove a Role
+  let sql = "SELECT * FROM role";
+  db.query(sql, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    promptUser()
+  });
+};
+
+promptUser();
