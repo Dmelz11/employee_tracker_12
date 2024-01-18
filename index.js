@@ -196,15 +196,14 @@ const removeEmployee = () => {
     }
   ])
   .then((answer)=>{
-    let employeeTitle;
+    let employeeId;
     data.forEach((employee)=>{
-      if (answer.selectedEmployee===`${employee.first_name} ${employee.last_name}`
-      ){employeeTitle = employee.title;}
-    })
+      if (answer.selectedEmployee ===`${employee.first_name} ${employee.last_name}`
+      ){employeeId = employee.id;}
+  
 });
-}
 let sql = `DELETE FROM employee WHERE employee = ?`;
-connection.query(sql,[employeeTitle],(error)=>{
+connection.query(sql, [employeeId], (error)=>{
 if (error) throw error;
 console.log(`Employee has been removed`);
 viewAllEmployees();
@@ -266,8 +265,14 @@ const addRole = () => {
     if (departmentData.departmentName === department.department_name)
     {departmentId =department.id;}
   });
+  let critical = [newRole, answer.salary, departmentId];
+  connection.promise().query(sql, critical,(error)=>{
+    if (error) throw error;
+    console.log('Role added.');
+    viewAllRoles();
+  });
+});
 
-})
 const removeRole = () => {
   //function to remove a Role
   let sql = "SELECT * FROM role";
@@ -276,8 +281,10 @@ const removeRole = () => {
     console.table(data);
     promptUser()
   });
-    }
-  }
 }
-  )}
+};
+});
+}
+  })};
+
   promptUser();
