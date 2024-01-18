@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 //import connection
 const db = require("./config/connection");
+const connection = require("./config/connection");
 //prompt user which action they want to take
 const promptUser = () => {
   //array of choices: view all departments, view all roles, view all employees,
@@ -151,28 +152,67 @@ const addEmployee = () => {
       connection.promise().query(managerSql,(error, data)=>{
         if (error) throw error;
         const managers = data.map(({id, first_name, last_name})=>({name: first_name +""+ last_name, value: id}));
-        console.log("A new employee has been added.");
-        viewAllEmployees();
-      });
+
+        inquirer.prompt ([
+          {
+            type:'list',
+            name: 'manager',
+            message:"Who is this employee's manager?",
+            choices: managers 
+          }
+        ])
+        .then(managerChoice =>{
+          const manager = managerChoice.manager;
+          critical.push(manager);
+          connection.query(sql, critical,(error)=>{
+            if (error) throw error;
+            console.log("A new employee has been added.");
+            viewAllEmployees();
+          });
+         });
+        });
       });
     });
   });
 }
+//function removeEmployee
 const removeEmployee = () => {
-  //function removeEmployee
-  let sql = "SELECT * FROM employee"
-  inquirer.prompt([
+  let sql = "SELECT * FROM employee";
+  connection.promise().query(sql,(error, data)=>{
+    if (error) throw error;
+    let employeeNameArray = [];
+    data.forEach((employee)=>{
+      employeeNameArray.push(`${employee.first_name} ${employee.last_name}`);
+    });
+  });
+
+   inquirer.prompt([
     {
-      type:'input',
-      name: 'firstName',
+      type:'list',
+      name: 'selectedEmployee',
+      message:"Which employee do you want to remove?",
+      choices: employeeNameArray
 
     }
   ])
-};
+  .then((answer)=>{
+    let employeeTitle;
+    data.forEach((employee)=>{
+      if (answer.selectedEmployee===`${employee.first_name} ${employee.last_name}`
+      ){employeeTitle = employee.title;}
+    })
+});
+}
+let sql = `DELETE FROM employee WHERE employee = ?`;
+connection.query(sql,[employeeTitle],(error)=>{
+if (error) throw error;
+console.log(`Employee has been removed`);
+viewAllEmployees();
+});
 
+//function viewAllRoles
 const viewAllRoles = () => {
-  //function viewAllRoles
-  let sql = "SELECT * FROM role";
+ let sql = "SELECT * FROM role";
   db.query(sql, (err, data) => {
     if (err) throw err;
     console.table(data);
@@ -180,16 +220,54 @@ const viewAllRoles = () => {
   });
 };
 
+ //function to add a Role
 const addRole = () => {
-  //function to add a Role
-  let sql = "SELECT * FROM role";
-  db.query(sql, (err, data) => {
+ let sql = "SELECT * FROM role";
+  connection.promise().query(sql, (err, data) => {
     if (err) throw err;
-    console.table(data);
-    promptUser()
+    let deptNamesArray =[];
+    data.forEach((department)=>{deptNamesArray.push(department.department_name);});
+    deptNamesArray.push('Create Department');
+     
+    inquirer.prompt([
+      {
+        type: 'list',
+        name: 'departmentName',
+        message: "Which department is the new role in?",
+        choices: deptNamesArray
+      }
+    ])
+    .then((answer)=>{
+      if(answer.departmentName === 'Create Department') {
+        this.addDepartment();
+      } else {
+        addRoleData(answer);
+      }
+    });
+    const addRoleData = (departmentData)=>{
+     
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'newRole',
+        message: "What is the new role called?",
+        validate: validate.validateString},
+      {
+        type:'input',
+        name:'salary',
+        message: " What is the salary for this role",
+        validate: validate.validateSalary
+      }
+    ])
+.then((answer)=>{
+  let newRole = answer.newRole;
+  let departmentId;
+  data.forEach((department)=>{
+    if (departmentData.departmentName === department.department_name)
+    {departmentId =department.id;}
   });
-};
 
+})
 const removeRole = () => {
   //function to remove a Role
   let sql = "SELECT * FROM role";
@@ -198,6 +276,8 @@ const removeRole = () => {
     console.table(data);
     promptUser()
   });
-};
-
-promptUser();
+    }
+  }
+}
+  )}
+  promptUser();
