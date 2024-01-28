@@ -67,7 +67,8 @@ const viewAllRoles = () => {
     promptUser();
   });
 };
-//function to view all employees is called");
+
+//console.log("view all employees is called");
 const viewAllEmployees = () => {
   let sql = "SELECT * FROM employee";
   db.query(sql, (err, data) => {
@@ -79,153 +80,227 @@ const viewAllEmployees = () => {
 
 //function to add department
 const addDepartment = () => {
- inquirer
+  inquirer
     .prompt({
       type: "input",
       name: "departmentName",
       message: "What is the new department called?",
     })
-    .then((answer)=>{
-      let query = `INSERT INTO department (department_name) VALUES ("${answer.departmentName}")`
+    .then((answer) => {
+      let query = `INSERT INTO department (department_name) VALUES ("${answer.departmentName}")`;
       connection.promise().query(query)
-      .then(()=>{
-        console.table(`Added ${answer.departmentName} department`);
-        promptUser();
-      });
+      .then(() => {
+          console.log(`Added ${answer.departmentName} department`);
+          promptUser();
+        });
+
+    
     });
 };
-
 let roleChoices;
 let managerChoices;
 
-  //function addEmployee
 const addEmployee = () => {
-let query = 'SELECT * FROM employee';
-connection.promise().query(query)
-.then(([data])=>{
-  let deptNames = [];
-  data.forEach((department) =>{
-    deptNames.push(department.department_name);
-  });
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "firstName",
-        message: "What is the employee's first name?",
-      },
-      {
-        type: "input",
-        name: "lastName",
-        message: "What is employee's last name?",
-      },
-      {
-        type: "list",
-        name: "role",
-        message: "What is the new employee's role?",
-        choices: roleChoices,
-      },    
-      {
-        type: "list",
-        name: "manager",
-        message: "Who is this employee's manager?",
-        choices: managerChoices,
-      },
-    ])
-      .then((answer) => {
-       let query = `INSERT INTO employee SET (?, ?, ?, ?)`;
-       connection.query(query,
-        {
-        first_name: answer.firstName,
-        last_name: answer.lastName,
-        role_id: answer.role_id,
-        manager_id: answer.manager_id,
-        },
-        function (err, res) {
-          if (err) throw err;
-          console.log(err);
-        })
-      })
-      .then((answer)=>{
-        if (answer.newEmployeeName==="Create new employee "){
-          this.addEmployee();
-        } else {
-          addRoleData(response);
-        }
-      });
-    },
-      (err, res) => {
-        if (err) throw err;
-        console.log("A new employee has been added.");
-        promptUser();
-   });
- };
-
-//function to add a Role
-const addRole = () => {
-  let sql = "SELECT * FROM role";
-  connection.promise().query(sql, (err, data) => {
-    if (err) throw err;
-    let deptNamesArray = [];
-    data.forEach((department) => {
-      deptNamesArray.push(department.department_name);
-    });
-    deptNamesArray.push("Create Department");
-
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "departmentName",
-          message: "Which department is the new role in?",
-          choices: deptNamesArray,
-        },
-      ])
-      .then((answer) => {
-        if (answer.departmentName === "Create Department") {
-          this.addDepartment();
-        } else {
-          addRoleData(answer);
-        }
-      });
-      
-    const addRoleData = (departmentData) => {
-      inquirer
-        .prompt([
+ let query = 'SELECT * FROM employee';
+ connection.promise().query(query)
+        .then(([data])=> {
+          let deptNames = [];
+          data.forEach((department) => {
+            deptNames.push(department.department_name);
+          });
+          inquirer
+          .prompt([
           {
             type: "input",
-            name: "newRole",
-            message: "What is the new role called?",
-      
+            name: "first_name",
+            message: "What is the new employee's first name?",
           },
           {
             type: "input",
-            name: "salary",
-            message: " What is the salary for this role",
-      
+            name: "last_name",
+            message: "What is the employee's last name?",
+          },
+          {
+            type: "list",
+            name: "role_id",
+            message: "What is the new employee's role?",
+            choices: roleChoices,
+          },
+          {  
+            type: "list",
+            name: "managerChoice",
+            message: "Who is the new employee's manager?",
+            choices: managerChoices,
           },
         ])
         .then((answer) => {
-          let newRole = answer.newRole;
-          let departmentId;
-          data.forEach((department) => {
-            if (departmentData.departmentName === department.department_name) {
-              departmentId = department.id;
-            }
-          });
-          let critical = [newRole, answer.salary, departmentId];
-          connection.promise().query(sql, critical, (error) => {
-            if (error) throw error;
-            console.log("Role added.");
-            viewAllRoles();
-          });
+         let query = `INSERT INTO employee SET (?, ?, ?, ?)`;
+         connection.query(query,
+          {
+           first_name: answer.firstName,
+           last_name: answer.lastName,
+           role_id: answer.role_id,
+           manager_id: answer.manager_id,
+          },
+            function (err, res) {
+             if (err) throw err;
+             console.log(err);
+            })
+         }) 
+        .then((answer)=>{
+          if (answer.newEmployeeName==="Create new employee"){
+             this.addEmployee();
+          } else {
+            addRoleData(response);
+          }
         });
+            },
+            (err, res) => {
+              if (err) throw err;
+              console.log("New employee added.");
+              promptUser();
+            })
+          }
+        
+    
+// const addEmployee = () => {
+//   let query = `SELECT role.id, role.title FROM role`;
+//   connection.promise().query(query)
+//     .then(([data]) => {
+//       roleChoices = data.map(({ id, title }) => ({
+//         value: id,
+//         name: `${title}`,
+//       }));
+//     })
+//     .then(() => {
+//       let query = "SELECT * FROM employee";
+//       connection.promise().query(query)
+//         .then(([data]) => {
+//           managerChoices = data.map(({ id, first_name, last_name }) => ({
+//             value: id,
+//             name: `${first_name} ${last_name}`,
+//           }));
+//           console.log(managerChoices, roleChoices);
+//         });
+//         inquirer
+//         .prompt([
+//           {
+//             type: "input",
+//             name: "firstName",
+//             message: "What is the employee's first name?",
+//           },
+//           {
+//             type: "input",
+//             name: "lastName",
+//             message: "What is employee's last name?",
+//           },
+//           {
+//             type: "list",
+//             name: "roleID",
+//             message: "What is the new employee's role.",
+//             choices: roleChoices,
+//           },
+//           {
+//             type: "list",
+//             name: "managerId",
+//             message: "What is the new employee's managers id.",
+//             choices: managerChoices,
+//           },
+//         ])
+//         .then((answer) => {
+//           let query = `INSERT INTO employee SET (?, ?, ?, ?)`;
+//           connection.query(
+//             query,
+//             {
+//               first_name: answer.firstName,
+//               last_name: answer.lastName,
+//               role_id: answer.role_id,
+//               manager_id: answer.manager_id,
+//             },
+//             function (err, res) {
+//               if (err) throw err;
+//               console.log(err);
 
-     
-        };
+//               console.table(res);
+//               console.log(res.insertedRows + "Employee successfully added.");
+//               promptUser();
+//             },
+//           );
+//         });
+//     })
+// };
+
+//function to add a Role
+
+
+
+const addRole = () => {
+  let query = "SELECT * FROM department";
+  connection.promise().query(query)
+    .then(([data]) => {
+      let deptNames = [];
+      data.forEach((department) => {
+        deptNames.push(department.department_name);
       });
-  
+     
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "departmentName",
+            message: "Which department is the new role in?",
+            choices: deptNames,
+          },
+        ])
+        .then((answer) => {
+          if (answer.departmentName === "Create Department") {
+            this.addDepartment();
+          } else {
+            addRoleData(answer);
+          }
+        });
+      let addRoleData = (departmentData) => {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              name: "newRole",
+              message: "What is the new role called?",
+      
+            },
+            {
+              type: "input",
+              name: "salary",
+              message: " What is the salary for this role",
+            },
+          ])
+          .then((answer) => {
+            let newRole = answer.newRole;
+            let departmentId;
+            data.forEach((department) => {
+              if (
+                departmentData.departmentName === department.department_name
+              ) {
+                departmentId = department.id;
+              }
+            });
+            let addedRole = [newRole, answer.salary, departmentId];
+            connection.query('INSERT INTO role SET ?', {
+             salary: answer.salary,
+             title: answer.newRole,
+             department_id: departmentId }, (error => { 
+            
+               if (error) throw error;
+             console.log("Role added.");
+             promptUser();
 
 
-    }
+          }));
+        });
+    };
+  });
+
+}
+        
+
 promptUser();
