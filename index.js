@@ -27,7 +27,7 @@ const promptUser = () => {
 
     //use conditional statement (if or switch)
     //choice is view all departments: execute viewAllDepartment function
-    .then((answers) => {;
+    .then((answers) => {
       const { choices } = answers;
       console.log(choices);
       if (choices === "View All Employees") {
@@ -51,8 +51,8 @@ const promptUser = () => {
 };
 //function viewAllDepartment() {
 const viewAllDepartments = () => {
-  let sql = `SELECT * FROM department`;
-  db.query(sql, (err, data) => {
+  let query = "SELECT * FROM department";
+  db.query(query,(err, data) => {
     if (err) throw err;
     console.table(data);
     promptUser();
@@ -60,8 +60,8 @@ const viewAllDepartments = () => {
 };
 //function viewAllRoles
 const viewAllRoles = () => {
-  let sql = "SELECT * FROM role";
-  db.query(sql, (err, data) => {
+  let query = "SELECT * FROM role";
+  db.query(query,(err, data) => {
     if (err) throw err;
     console.table(data);
     promptUser();
@@ -70,10 +70,10 @@ const viewAllRoles = () => {
 
 //console.log("view all employees is called");
 const viewAllEmployees = () => {
-  let sql = "SELECT * FROM employee";
-  db.query(sql, (err, data) => {
+  let query = "SELECT * FROM employee";
+  db.query(query,(err, data) => {
     if (err) throw err;
-    console.log(data);
+    console.table(data);
     promptUser();
   });
 };
@@ -100,16 +100,26 @@ const addDepartment = () => {
 let roleChoices;
 let managerChoices;
 
+
 const addEmployee = () => {
- let query = 'SELECT * FROM employee';
- connection.promise().query(query)
-        .then(([data])=> {
-          let deptNames = [];
-          data.forEach((department) => {
-            deptNames.push(department.department_name);
-          });
-          inquirer
-          .prompt([
+
+  let query = 'SELECT * FROM role';
+  db.query(query,(error, res)=>{
+    roleChoices = res.map(role =>({
+      name: role.title,
+      value: role.id
+    }));
+    let query = 'SELECT * FROM employee';
+    db.query(query,(error, res)=>{
+      managerChoices = res.map(employee => ({
+       name: employee.first_name.concat (employee.last_name),
+       value: employee.id 
+     
+   
+      }));
+
+        inquirer
+          .prompt ([
           {
             type: "input",
             name: "first_name",
@@ -134,106 +144,21 @@ const addEmployee = () => {
           },
         ])
         .then((answer) => {
-         let query = `INSERT INTO employee SET (?, ?, ?, ?)`;
-         connection.query(query,
-          {
-           first_name: answer.firstName,
-           last_name: answer.lastName,
-           role_id: answer.role_id,
-           manager_id: answer.manager_id,
-          },
-            function (err, res) {
-             if (err) throw err;
-             console.log(err);
-            })
-         }) 
-        .then((answer)=>{
-          if (answer.newEmployeeName==="Create new employee"){
-             this.addEmployee();
-          } else {
-            addRoleData(response);
+         let query = `INSERT INTO employee SET first_name = '${answer.first_name}',
+         last_name = '${answer.last_name}', role_id = '${answer.role_id}', manager_id = '${answer.manager_id}';`
+         db.query(query, (err,res) => {
+          if (err) {
+            console.log(err);
+            return;
           }
+          console.log("Added Employee");
+          promptUser();
+         });
         });
-            },
-            (err, res) => {
-              if (err) throw err;
-              console.log("New employee added.");
-              promptUser();
-            })
-          }
-        
-    
-// const addEmployee = () => {
-//   let query = `SELECT role.id, role.title FROM role`;
-//   connection.promise().query(query)
-//     .then(([data]) => {
-//       roleChoices = data.map(({ id, title }) => ({
-//         value: id,
-//         name: `${title}`,
-//       }));
-//     })
-//     .then(() => {
-//       let query = "SELECT * FROM employee";
-//       connection.promise().query(query)
-//         .then(([data]) => {
-//           managerChoices = data.map(({ id, first_name, last_name }) => ({
-//             value: id,
-//             name: `${first_name} ${last_name}`,
-//           }));
-//           console.log(managerChoices, roleChoices);
-//         });
-//         inquirer
-//         .prompt([
-//           {
-//             type: "input",
-//             name: "firstName",
-//             message: "What is the employee's first name?",
-//           },
-//           {
-//             type: "input",
-//             name: "lastName",
-//             message: "What is employee's last name?",
-//           },
-//           {
-//             type: "list",
-//             name: "roleID",
-//             message: "What is the new employee's role.",
-//             choices: roleChoices,
-//           },
-//           {
-//             type: "list",
-//             name: "managerId",
-//             message: "What is the new employee's managers id.",
-//             choices: managerChoices,
-//           },
-//         ])
-//         .then((answer) => {
-//           let query = `INSERT INTO employee SET (?, ?, ?, ?)`;
-//           connection.query(
-//             query,
-//             {
-//               first_name: answer.firstName,
-//               last_name: answer.lastName,
-//               role_id: answer.role_id,
-//               manager_id: answer.manager_id,
-//             },
-//             function (err, res) {
-//               if (err) throw err;
-//               console.log(err);
-
-//               console.table(res);
-//               console.log(res.insertedRows + "Employee successfully added.");
-//               promptUser();
-//             },
-//           );
-//         });
-//     })
-// };
-
-//function to add a Role
-
-
-
+      });
+     }); 
+  };
+  //function to add a Role
 const addRole = () => {
   let query = "SELECT * FROM department";
   connection.promise().query(query)
@@ -299,8 +224,8 @@ const addRole = () => {
         });
     };
   });
-
 }
+
         
 
 promptUser();
