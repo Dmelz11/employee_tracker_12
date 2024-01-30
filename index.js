@@ -111,13 +111,12 @@ const addEmployee = () => {
     }));
     let query = 'SELECT * FROM employee';
     db.query(query,(error, res)=>{
-      managerChoices = res.map(employee => ({
-       name: employee.first_name.concat (employee.last_name),
-       value: employee.id 
-     
+      managerChoices = res.map(({id, first_name, last_name}) => ({
+      name: `${first_name} ${last_name}`,
+      value: id
    
       }));
-
+          console.log (managerChoices);
         inquirer
           .prompt ([
           {
@@ -138,14 +137,14 @@ const addEmployee = () => {
           },
           {  
             type: "list",
-            name: "managerChoice",
+            name: "managerChoices",
             message: "Who is the new employee's manager?",
             choices: managerChoices,
           },
         ])
         .then((answer) => {
          let query = `INSERT INTO employee SET first_name = '${answer.first_name}',
-         last_name = '${answer.last_name}', role_id = '${answer.role_id}', manager_id = '${answer.manager_id}';`
+         last_name = '${answer.last_name}', role_id = '${answer.role_id}', manager_id = '${answer.managerChoices}';`
          db.query(query, (err,res) => {
           if (err) {
             console.log(err);
