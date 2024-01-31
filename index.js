@@ -20,6 +20,7 @@ const promptUser = () => {
           "Add Role",
           "View All Departments",
           "Add Department",
+          "Update Employee Role",
           "Exit",
         ],
       },
@@ -42,6 +43,8 @@ const promptUser = () => {
         viewAllDepartments();
       } else if (choices === "Add Department") {
         addDepartment();
+      } else if (choices === "Update Employee Role") {
+        updateEmployeeRole(); 
       } else if (choices === "Exit") {
         db.end();
       } else {
@@ -99,7 +102,7 @@ const addDepartment = () => {
 };
 let roleChoices;
 let managerChoices;
-
+let employeeChoices;
 
 const addEmployee = () => {
 
@@ -114,9 +117,9 @@ const addEmployee = () => {
       managerChoices = res.map(({id, first_name, last_name}) => ({
       name: `${first_name} ${last_name}`,
       value: id
-   
+
       }));
-          console.log (managerChoices);
+    
         inquirer
           .prompt ([
           {
@@ -217,12 +220,70 @@ const addRole = () => {
                if (error) throw error;
              console.log("Role added.");
              promptUser();
-
-
           }));
         });
     };
   });
+}
+const updateEmployeeRole = () => {
+
+  let query = "SELECT * FROM employee";
+  db.query(query,(error, res)=>{
+    employeeChoices = res.map(({id, first_name, last_name}) => ({
+    name: `${first_name} ${last_name}`,
+    value: id
+   }));
+
+  let query = 'SELECT * FROM role';
+  db.query(query,(error, res)=>{
+     roleChoices = res.map(role =>({
+       name: role.title,
+       value: role.id
+     }));
+
+     let query = 'SELECT * FROM employee';
+    db.query(query,(error, res)=>{
+      managerChoices = res.map(({id, first_name, last_name}) => ({
+      name: `${first_name} ${last_name}`,
+      value: id
+
+      }));
+
+    inquirer
+     .prompt ([
+     {
+      type: "list",
+      name: "employeeChoices",
+      message: "Which employee's role do you wish to change?",
+      choices: employeeChoices
+     },
+     {
+      type: "list",
+      name: "roleChoices",
+      message: "Which role would you like this employee in?",
+      choices: roleChoices
+     },
+     {
+      type: "list",
+      name: "managerChoices",
+      message: "Who is this employee's manager?",
+      choices: managerChoices
+     },
+   ])
+   .then((answer) => {
+    let query = `UPDATE INTO employee SET role ='${answer.roleChoices}', manager_id = '${answer.managerChoices}', employee_id = '${answer.employeeChoices}',WHERE = '${role_id}';`
+    db.query(query, (err,res) => {
+     if (err) {
+       console.log(err);
+       return;
+     }
+     console.log("Employee has been updated.");
+     promptUser();
+    });
+   });
+ });
+}); 
+});
 }
 
         
