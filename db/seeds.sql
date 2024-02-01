@@ -18,7 +18,7 @@ VALUES
 ("Chief Consule", 200000, 5);
 
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id,)
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES
 ("John","Brown", 1, null),
 ("Laura", "Irene", 2, 1),
