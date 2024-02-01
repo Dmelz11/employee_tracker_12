@@ -234,16 +234,16 @@ const updateEmployeeRole = () => {
     value: id
    }));
 
-  let query = 'SELECT * FROM role';
+  let query = "SELECT * FROM role";
   db.query(query,(error, res)=>{
      roleChoices = res.map(role =>({
        name: role.title,
        value: role.id
      }));
 
-     let query = 'SELECT * FROM employee';
+     let query = "SELECT * FROM employee";
     db.query(query,(error, res)=>{
-      managerChoices = res.map(({id, first_name, last_name}) => ({
+      managerChoices = res.map(({id, first_name, last_name, manager_id}) => ({
       name: `${first_name} ${last_name}`,
       value: id
 
@@ -271,7 +271,7 @@ const updateEmployeeRole = () => {
      },
    ])
    .then((answer) => {
-    let query = `UPDATE INTO employee SET role ='${answer.roleChoices}', manager_id = '${answer.managerChoices}', employee_id = '${answer.employeeChoices}',WHERE = '${role_id}';`
+    let query = `UPDATE INTO employee SET role_id ='${answer.roleChoices}', manager_id = '${answer.managerChoices}', employee_id = '${answer.employeeChoices}',WHERE id = '${answer.employeeChoices}';`
     db.query(query, (err,res) => {
      if (err) {
        console.log(err);
