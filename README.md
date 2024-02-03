@@ -46,4 +46,4 @@ and submit any changes by making a pull request.
 
 Github: https://github.com/Dmelz11/employee_tracker_12
 
-Recording:
+Recording: https://drive.google.com/file/d/1jO7QbnWOR20YO7X3vozGactUPptcRSSY/view
